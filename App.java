@@ -1,4 +1,5 @@
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.InputMismatchException;
@@ -138,8 +139,13 @@ public class App {
         pressEnterToContinue();
     }
     
+    /*
+     * TODO: add a transfer functionality that takes an account id and amount of balance to be transfered
+     * That means to add a new column into transaction data
+     * That also means the need of account creation implementation
+     * good luck bitch! ^-^
+     */
     public static void transfer() {
-
     }
 
     public static void checkTransaction() throws InterruptedException {
@@ -151,7 +157,24 @@ public class App {
         if (transactions.isEmpty()) {
             System.out.println("No transaction has been made");
         } else {
-            transactions.forEach(System.out::println);
+            System.out.printf("%-4s| %-9s| %-13s| %-24s| %-8s|%n", "No.", "Type", "Amount", "Date", "Status");
+            System.out.println("----+----------+--------------+-------------------------+---------+");
+
+            var wrapper = new Object() {
+                int i = 0;
+            };
+
+            transactions.forEach(transaction -> {
+                ++wrapper.i;
+                String type = transaction.get("Type").toString();
+                String amount = transaction.get("Amount").toString();
+                String date = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss z").format(transaction.get("Date")).toString();
+                String status = transaction.get("Status").toString();
+
+                System.out.printf("%4s| %-9s| %-13s| %-24s| %-8s|%n", wrapper.i + " ", type, amount, date, status);
+            });
+
+            System.out.println("----+----------+--------------+-------------------------+---------+");
         }
 
         pressEnterToContinue();
