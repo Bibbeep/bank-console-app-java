@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
+/*
+ * TODO: Implement an account-creation functionality with Register and Login
+ */
 @SuppressWarnings("resource")
 public class App {
     public static void main(String[] args) {
@@ -76,6 +79,7 @@ public class App {
     public static void deposit() throws InterruptedException {
         clearScreen();
         printBanner();
+
         Scanner sc = new Scanner(System.in);
         System.out.print("Deposit amount: ");
 
@@ -109,6 +113,7 @@ public class App {
     public static void withdraw() {
         clearScreen();
         printBanner();
+
         Scanner sc = new Scanner(System.in);
         System.out.print("Withdrawal amount: ");
 
@@ -139,13 +144,42 @@ public class App {
         pressEnterToContinue();
     }
     
-    /*
-     * TODO: add a transfer functionality that takes an account id and amount of balance to be transfered
-     * That means to add a new column into transaction data
-     * That also means the need of account creation implementation
-     * good luck bitch! ^-^
-     */
     public static void transfer() {
+        clearScreen();
+        printBanner();
+
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Recipient account number: ");
+
+        try {
+            String recAccNo = sc.nextLine(); // Recipient Account Number
+
+            System.out.print("Transfer amount: ");
+            int amount = sc.nextInt();
+
+            Account.transfer(recAccNo, amount);
+            printProcess();
+
+            String status = Account.getRecentTransaction().get("Status").toString();
+
+            if (status.equals("Success")) {
+                printBanner();
+                System.out.println("Successfully transferred " + amount + " to " + recAccNo + "!");
+            } else {
+                printBanner();
+                System.out.println("Transfer failed!");
+            }
+        } catch (InputMismatchException e) {
+            clearScreen();
+            System.out.println("===== WARNING! =====");
+            System.out.println("Invalid amount!");
+        } catch (Exception e) {
+            clearScreen();
+            System.out.println("===== WARNING! =====");
+            System.out.println(e.getMessage());
+        }
+
+        pressEnterToContinue();
     }
 
     public static void checkTransaction() throws InterruptedException {
@@ -157,8 +191,8 @@ public class App {
         if (transactions.isEmpty()) {
             System.out.println("No transaction has been made");
         } else {
-            System.out.printf("%-4s| %-9s| %-13s| %-24s| %-8s|%n", "No.", "Type", "Amount", "Date", "Status");
-            System.out.println("----+----------+--------------+-------------------------+---------+");
+            System.out.printf("%-4s| %-9s| %-13s| %-24s| %-8s| %-18s|%n", "No.", "Type", "Amount", "Date", "Status", "Recipient");
+            System.out.println("----+----------+--------------+-------------------------+---------+-------------------+");
 
             var wrapper = new Object() {
                 int i = 0;
@@ -170,11 +204,12 @@ public class App {
                 String amount = transaction.get("Amount").toString();
                 String date = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss z").format(transaction.get("Date")).toString();
                 String status = transaction.get("Status").toString();
+                String recipient = transaction.get("Recipient") != null ? transaction.get("Recipient").toString() : "-";
 
-                System.out.printf("%4s| %-9s| %-13s| %-24s| %-8s|%n", wrapper.i + " ", type, amount, date, status);
+                System.out.printf("%4s| %-9s| %-13s| %-24s| %-8s| %-18s|%n", wrapper.i + " ", type, amount, date, status, recipient);
             });
 
-            System.out.println("----+----------+--------------+-------------------------+---------+");
+            System.out.println("----+----------+--------------+-------------------------+---------+-------------------+");
         }
 
         pressEnterToContinue();
@@ -201,7 +236,7 @@ public class App {
     }
 
     public static void pressEnterToContinue() { 
-        System.out.println("\nPress Enter key to continue...");
+        System.out.print("\nPress Enter key to continue...");
         try {
             System.in.read();
         } catch (Exception e) {

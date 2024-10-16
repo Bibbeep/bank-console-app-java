@@ -50,4 +50,24 @@ public class Account {
 
         balance -= amount;
     }
+
+    public static void transfer(String recAccNo, int amount) throws Exception {
+        if (!recAccNo.matches("^[0-9]+$")) {
+            throw new Exception("Invalid account number!");
+        }
+
+        if (amount <= 0 || amount > balance) {
+            throw new Exception("Invalid amount!");
+        }
+
+        final Transaction thisTransaction = new Transaction("Transfer", amount, recAccNo);
+        final HashMap<String, Serializable> thisTransactionData = thisTransaction.getTransactionData();
+        transactionRecord.add(thisTransactionData);
+
+        if (thisTransactionData.get("Status").equals("Fail")) {
+            return;
+        }
+
+        balance -= amount;
+    }
 }

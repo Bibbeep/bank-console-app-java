@@ -10,6 +10,7 @@ public class Transaction {
     private String status;
     private Date date;
     private Integer amount;
+    private String recAccNo = null; // Recipient's Account Number
 
     public Transaction(String type, int amount) {
         this.id = UUID.randomUUID().toString();
@@ -19,6 +20,11 @@ public class Transaction {
         this.amount = amount;
     }
 
+    public Transaction(String type, int amount, String recAccNo) {
+        this(type, amount);
+        this.recAccNo = recAccNo;
+    }
+
     public HashMap<String, Serializable> getTransactionData() {
         return new HashMap<>() {{
             put("ID", id);
@@ -26,6 +32,7 @@ public class Transaction {
             put("Status", status);
             put("Date", date);
             put("Amount", amount);
+            put("Recipient", recAccNo);
         }};
     }
 }
